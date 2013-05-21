@@ -21,22 +21,41 @@ module.exports = function (grunt) {
         jshint: {
             all: ['Gruntfile.js', 'src/*.js', 'test/spec/*.js']
         },
+        bower: {
+            install: {
+                options: {
+                    cleanBowerDir: true
+                }
+            }
+        },
         karma: {
             unit: {
-                configFile: 'karma.conf.js',
-                singleRun: true
+                configFile: 'karma.conf.js'
+            }
+        },
+        watch: {
+            scripts: {
+                files: 'src/*.js',
+                tasks: ['test']
+            },
+            tests: {
+                files: 'test/spec/*.js',
+                tasks: ['test']
             }
         }
 
     });
 
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('test', ['jshint', 'karma']);
 
-    grunt.registerTask('default', ['test', 'concat', 'uglify']);
+    grunt.registerTask('test', ['bower', 'jshint', 'karma']);
+    grunt.registerTask('build', ['concat', 'uglify']);
+    grunt.registerTask('default', ['build']);
 
 };

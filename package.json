@@ -17,7 +17,9 @@
     "devDependencies": {
         "grunt": "0.4.x",
         "grunt-contrib-jshint": "0.5.x",
-        "grunt-karma": "0.4.x"
+        "grunt-karma": "0.4.x",
+        "grunt-bower-task": "0.2.x",
+        "grunt-contrib-watch": "0.4.x"
     },
     "repository": {
         "type": "git",

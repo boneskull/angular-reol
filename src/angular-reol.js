@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    angular.module('reol', []).factory('Reol', ['$parse', function ($parse) {
+    angular.module('reol', []).factory('reol', ['$parse', function ($parse) {
 
         /**
          * Reol
@@ -15,20 +15,20 @@
          * @return (Object) this
          */
 
-        function Reol(fields) {
+        var Reol = function Reol(fields) {
             var that = this;
+            fields = fields || {};
 
+            this.list = [];
             this.index = {};
             this.indexes = {};
 
             // Define indexes
-            angular.forEach(fields, function (field) {
+            angular.forEach(fields, function (_, field) {
                 that.index[field] = {};
                 that.indexes[field] = fields[field];
             });
-        }
-
-        Reol.prototype = Array.prototype;
+        };
 
         /* Public methods
          ============================================================================= */
@@ -45,31 +45,43 @@
          * @return (Reol) this
          */
 
-        Reol.prototype.add = function (element, callback) {
-            var err, that = this;
-            callback = callback || angular.noop;
+        Reol.prototype.add = function add(element, callback) {
+            var that = this, i, l;
 
-            if (!angular.isObject(element)) {
-                err = new Error('Sorry, this class only works with objects.');
-                if (callback) {
-                    callback(err);
+            callback = callback || function (e) {
+                if (angular.isDefined(e)) {
+                    throw e;
                 }
-                else {
-                    throw err;
+            };
+
+            if (!angular.isObject(element) && !angular.isArray(element)) {
+                callback(new Error('add() requires an object or array of objects'));
+                return this;
+            }
+
+            // Removed merge() in favor of this; if "element" is an Array,
+            // add everything in it.  If you want to merge two Reol objects,
+            // do this instead:
+            //   reol1.merge(reol2.toArray());
+            if (angular.isArray(element)) {
+                for (i = 0, l = element.length; i < l; i++) {
+                    this.add(element[i]);
                 }
+                return this;
             }
 
             // Add to list
-            this.push(element);
+            this.list.push(element);
 
             // Add to indexes
-            angular.forEach(this.indexes, function(field) {
-                addToIndexe.call(that, field, element);
+            angular.forEach(this.indexes, function (_, field) {
+                that._addToIndex(field, element);
             });
+
+            callback();
 
             return this;
         };
-
 
         /**
          * .merge()
@@ -81,18 +93,8 @@
          * @return (Object) this
          */
 
-        Reol.prototype.merge = function (elements, callback) {
-            var i, l;
-
-            for (i = 0, l = elements.length; i < l; i++) {
-                this.add(elements[i]);
-            }
-
-            if (callback) {
-                callback();
-            }
-
-            return this;
+        Reol.prototype.merge = function merge(elements, callback) {
+            return this.add(elements, callback);
         };
 
 
@@ -102,27 +104,36 @@
          * Find all elements matching the conditions.
          * an array with one element.
          *
-         * @param conditions (object) One (1!) condition to match. Multiple conditions will
+         * @param conditions (String|Object) One (1!) condition to match. Multiple conditions will
          *  be supported later.
          * @param [callback] (Function) Optional callback
          * @param [one] (Boolean) If true will only return one element
          * @return (Array|Object|undefined) The found elements
          */
 
-        Reol.prototype.find = function (conditions, callback, one) {
+        Reol.prototype.find = function find(conditions, callback, one) {
             var key, condition, result;
 
             callback = callback || angular.noop;
 
-            // Extract property name
-            for (condition in conditions) {
-                if (conditions.hasOwnProperty(condition)) {
-                    key = condition;
-                    break;
+            if (angular.isString(conditions)) {
+                key = conditions;
+            }
+            else if (angular.isObject(conditions)) {
+                // Extract property name
+                for (condition in conditions) {
+                    if (conditions.hasOwnProperty(condition)) {
+                        if (angular.isDefined(key)) {
+                            throw new Error('not implemented: object passed to find() must have only one condition');
+                        }
+                        key = condition;
+                    }
                 }
+            } else if (angular.isDefined(conditions)) {
+                throw new Error('find() expects a string, an object as the first parameter, or no parameters');
             }
 
-            // Return eveything
+            // Return everything
             if (!key) {
                 callback(this.toArray());
                 return this.toArray();
@@ -155,7 +166,7 @@
          * @return (Object|undefined) The element found if found
          */
 
-        Reol.prototype.findOne = function (conditions, callback) {
+        Reol.prototype.findOne = function findOne(conditions, callback) {
             return this.find(conditions, function (err, result) {
                 if (callback) {
                     callback(err, result[0]);
@@ -175,7 +186,7 @@
          * @return (Array) Found elements.
          */
 
-        Reol.prototype.findInIndex = function (key, value) {
+        Reol.prototype.findInIndex = function findInIndex(key, value) {
             return this.index[key][angular.toJson(value)];
         };
 
@@ -183,7 +194,7 @@
         /**
          * .findInList()
          *
-         * Justa naive search through all elements until a match is found
+         * Just a naive search through all elements until a match is found
          *
          * @param key (string) The name of the index/field to match
          * @param value (string) The value to match
@@ -191,8 +202,8 @@
          * @return (Array) Found elements.
          */
 
-        Reol.prototype.findInList = function (key, value, one) {
-            var i, l, result = [], list = this;
+        Reol.prototype.findInList = function findInList(key, value, one) {
+            var i, l, result = [], list = this.list;
 
             for (i = 0, l = list.length; i < l; i++) {
                 if (list[i].hasOwnProperty(key) && list[i][key] === value) {
@@ -211,20 +222,19 @@
         /**
          * .toArray()
          *
-         * Basically just returns this, but use this anyway in case of API changes
+         * Returns this.list.
          *
          * @return (Array) Everything
          */
 
         Reol.prototype.toArray = function () {
-            return this;
+            return this.list;
         };
 
 
-        /* Private helpers (must be .call()ed)
+        /* "Private" helper; exposed for testing
          ============================================================================= */
-
-        function addToIndexe(field, element) {
+        Reol.prototype._addToIndex = function _addToIndex(field, element) {
             var indexedValue = '';
 
             if (element[field]) {
@@ -233,15 +243,16 @@
             else if (field.indexOf('.')) {
                 indexedValue = angular.toJson($parse(field)(element));
             }
-
-            /*jshint validthis:true */
+            if (angular.isUndefined(indexedValue)) {
+                return false;
+            }
             if (!this.index[field].hasOwnProperty(indexedValue)) {
                 this.index[field][indexedValue] = element;
                 return true;
             }
 
             return false;
-        }
+        };
 
         return function (o) {
             return new Reol(o);
