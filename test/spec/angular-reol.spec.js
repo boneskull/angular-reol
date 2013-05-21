@@ -95,12 +95,11 @@ describe('angular-reol', function () {
             var testObj2 = {
                 label1: 'test2'
             };
-            spyOn(r, 'add').andCallFake(function() {
-                console.log(arguments);
-            });
+            spyOn(r, 'add');
             r.merge([testObj2]);
-            expect(r.add).toHaveBeenCalledWith([testObj2]);
-
+            expect(r.add).toHaveBeenCalled();
+            // this is very weird and I think it's a spy/jasmine issue I can't figure out
+            expect(r.add).toHaveBeenCalledWith([testObj2], undefined);
         });
     });
 
