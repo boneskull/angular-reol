@@ -36,7 +36,6 @@ describe('angular-reol', function () {
             expect(r.index).toEqual({foo: {}});
             expect(r.indexes).toEqual({foo: true});
 
-            expect(r.list).toEqual([]);
         });
     });
 
@@ -56,7 +55,6 @@ describe('angular-reol', function () {
                     '"eek"': testObj
                 }
             });
-            expect(r.list).toEqual([testObj]);
         });
         it('should add multiples', function () {
             var testObj2 = {
@@ -100,6 +98,13 @@ describe('angular-reol', function () {
             expect(r.add).toHaveBeenCalled();
             // this is very weird and I think it's a spy/jasmine issue I can't figure out
             expect(r.add).toHaveBeenCalledWith([testObj2], undefined);
+        });
+    });
+
+    describe('toArray', function() {
+        it('should return a real array', function() {
+            expect(angular.isArray(r)).toBe(false);
+            expect(angular.isArray(r.toArray())).toBe(true);
         });
     });
 

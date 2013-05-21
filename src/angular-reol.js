@@ -19,7 +19,6 @@
             var that = this;
             fields = fields || {};
 
-            this.list = [];
             this.index = {};
             this.indexes = {};
 
@@ -29,6 +28,8 @@
                 that.indexes[field] = fields[field];
             });
         };
+
+        Reol.prototype = [];
 
         /* Public methods
          ============================================================================= */
@@ -71,7 +72,7 @@
             }
 
             // Add to list
-            this.list.push(element);
+            this.push(element);
 
             // Add to indexes
             angular.forEach(this.indexes, function (_, field) {
@@ -203,7 +204,7 @@
          */
 
         Reol.prototype.findInList = function findInList(key, value, one) {
-            var i, l, result = [], list = this.list;
+            var i, l, result = [], list = this;
 
             for (i = 0, l = list.length; i < l; i++) {
                 if (list[i].hasOwnProperty(key) && list[i][key] === value) {
@@ -222,13 +223,13 @@
         /**
          * .toArray()
          *
-         * Returns this.list.
+         * Returns this.
          *
          * @return (Array) Everything
          */
 
         Reol.prototype.toArray = function () {
-            return this.list;
+            return Array.apply(this, this);
         };
 
 
