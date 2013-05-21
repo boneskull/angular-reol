@@ -10,8 +10,7 @@ basePath = '';
 files = [
     JASMINE,
     JASMINE_ADAPTER,
-    'components/angular/angular.js',
-    'src/angular-reol.js',
+    '../components/angular/angular.js',
     'test/spec/angular-reol.spec.js'
 ];
 
