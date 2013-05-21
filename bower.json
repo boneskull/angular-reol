@@ -1,7 +1,7 @@
 {
-  "name": "angularjs-reol",
+  "name": "angular-reol",
   "version": "0.0.1",
-  "main": "src/angularjs-reol.js",
+  "main": "src/angular-reol.js",
   "dependencies": {
     "angular": "~1.0.6"
   },
