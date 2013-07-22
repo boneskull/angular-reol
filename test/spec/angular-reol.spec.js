@@ -3,13 +3,7 @@ describe('angular-reol', function () {
     'use strict';
 
     var reol, r,
-        testObj = {
-            label1: 'test',
-            unIndexedField: 'meow',
-            nested: {
-                child: 'eek'
-            }
-        };
+        testObj;
 
     beforeEach(module('reol'));
     beforeEach(inject(function ($injector) {
@@ -19,6 +13,14 @@ describe('angular-reol', function () {
             label1: true,
             'nested.child': true
         });
+
+        testObj = {
+            label1: 'test',
+            unIndexedField: 'meow',
+            nested: {
+                child: 'eek'
+            }
+        };
 
     }));
 
@@ -36,6 +38,17 @@ describe('angular-reol', function () {
             expect(r.index).toEqual({foo: {}});
             expect(r.indexes).toEqual({foo: true});
 
+        });
+    });
+
+    describe('array behavior', function () {
+        it('should iterate like an array', function () {
+            var i;
+            r.add(testObj);
+            i = r.length;
+            while (i--) {
+                expect(r[i]).toBeDefined();
+            }
         });
     });
 
@@ -88,6 +101,12 @@ describe('angular-reol', function () {
         });
     });
 
+    describe('findOne function', function () {
+        it('should find something', function () {
+            expect(r.findOne({label1: 'test'}));
+        });
+    });
+
     describe('merge function', function () {
         it('should call add()', function () {
             var testObj2 = {
@@ -101,10 +120,39 @@ describe('angular-reol', function () {
         });
     });
 
-    describe('toArray', function() {
-        it('should return a real array', function() {
+    describe('toArray', function () {
+        it('should return a real array', function () {
             expect(angular.isArray(r)).toBe(false);
             expect(angular.isArray(r.toArray())).toBe(true);
+        });
+    });
+
+    describe('_clear', function () {
+        it('should decimate the list', function () {
+            r.add(testObj);
+            r.add(testObj);
+            r._clear();
+            expect(r.index).toEqual({});
+            expect(r.toArray()).toEqual([]);
+        });
+    });
+
+    describe('remove', function () {
+        it('should call clear', function () {
+            r.add(testObj);
+            r.add(testObj);
+            expect(function () {
+                r.remove(null, null, true);
+            }).toThrow();
+            spyOn(r, '_clear');
+            r.remove();
+            expect(r._clear).toHaveBeenCalled();
+        });
+        it('should remove a thing', function () {
+            r.add(testObj);
+            r.remove(testObj);
+            expect(r.index).toEqual({ 'nested.child': {}, label1: {} });
+            expect(r.toArray()).toEqual([]);
         });
     });
 

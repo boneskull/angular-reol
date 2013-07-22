@@ -124,10 +124,8 @@
                 // Extract property name
                 for (condition in conditions) {
                     if (conditions.hasOwnProperty(condition)) {
-                        if (angular.isDefined(key)) {
-                            throw new Error('not implemented: object passed to find() must have only one condition');
-                        }
                         key = condition;
+                        break;
                     }
                 }
             } else if (angular.isDefined(conditions)) {
@@ -142,14 +140,16 @@
 
             // Find in index
             if (this.index[key]) {
-                result = this.findInIndex(key, conditions[key]) || [];
+                result = this.findInIndex(key, conditions[key]);
             }
             // Find in list
             else {
                 result = this.findInList(key, conditions[key], one);
             }
 
-            result = !result && [] || angular.isUndefined(result.length) && result || [result];
+            if (!angular.isArray(result)) {
+                result = [result];
+            }
 
             callback(null, result);
             return result;
@@ -168,13 +168,72 @@
          */
 
         Reol.prototype.findOne = function findOne(conditions, callback) {
+            callback = callback || angular.noop;
             return this.find(conditions, function (err, result) {
-                if (callback) {
-                    callback(err, result[0]);
-                }
+                callback(err, result[0]);
             }, true)[0];
         };
 
+        /**
+         * Clears out the entire list.  Use remove() to call this.
+         */
+        Reol.prototype._clear = function _clear(callback) {
+            callback = callback || angular.noop;
+            this.index = {};
+            this.length = 0;
+            callback();
+        };
+
+        /**
+         * Grabs the index of the key/value pair in the list.
+         * @param key
+         * @param value
+         * @returns {number} Index, -1 if not found
+         */
+        Reol.prototype._findIndexInList = function findInList(key, value) {
+            var i, l, list = this;
+
+            for (i = 0, l = list.length; i < l; i++) {
+                if (list[i].hasOwnProperty(key) && list[i][key] === value) {
+                    return i;
+                }
+            }
+
+            return -1;
+        };
+
+        /**
+         * Removes something.  By default remove everything.
+         * @param conditions Condition object
+         * @param callback Callback
+         * @param {boolean} one Whether to only remove one thing
+         */
+        Reol.prototype.remove = function remove(conditions, callback, one) {
+            var condition, key, that = this;
+
+            callback = callback || angular.noop;
+            if (!angular.isObject(conditions) || conditions === null) {
+                if (one && this.length > 1) {
+                    throw new Error('attempt to remove everything from a length > 1 array while specifying to remove only one item');
+                }
+                this._clear(callback);
+                return;
+            }
+
+            function removeFromIndex(_, field) {
+                that._removeFromIndex(field, conditions);
+            }
+
+            for (condition in conditions) {
+                if (conditions.hasOwnProperty(condition)) {
+                    key = condition;
+                    angular.forEach(this.indexes, removeFromIndex);
+                    this.splice(this._findIndexInList(key, conditions[key]), 1);
+                }
+            }
+
+            callback();
+        };
 
         /**
          * .findInIndex()
@@ -209,7 +268,6 @@
             for (i = 0, l = list.length; i < l; i++) {
                 if (list[i].hasOwnProperty(key) && list[i][key] === value) {
                     result.push(list[i]);
-
                     if (one) {
                         break;
                     }
@@ -236,7 +294,7 @@
         /* "Private" helper; exposed for testing
          ============================================================================= */
         Reol.prototype._addToIndex = function _addToIndex(field, element) {
-            var indexedValue = '';
+            var indexedValue;
 
             if (element[field]) {
                 indexedValue = angular.toJson(element[field]);
@@ -249,6 +307,29 @@
             }
             if (!this.index[field].hasOwnProperty(indexedValue)) {
                 this.index[field][indexedValue] = element;
+                return true;
+            }
+
+            return false;
+        };
+
+        Reol.prototype._removeFromIndex = function _removeFromIndex(field, element) {
+            var indexedValue;
+
+            if (element[field]) {
+                indexedValue = angular.toJson(element[field]);
+            }
+
+            else if (field.indexOf('.')) {
+                indexedValue = angular.toJson($parse(field)(element));
+            }
+
+            if (angular.isUndefined(indexedValue)) {
+                return false;
+            }
+
+            if (this.index[field].hasOwnProperty(indexedValue)) {
+                delete this.index[field][indexedValue];
                 return true;
             }
 
