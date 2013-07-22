@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    angular.module('reol', []).factory('reol', ['$parse', '$q', function ($parse) {
+    angular.module('reol', []).factory('reol', ['$parse', function ($parse) {
 
         /**
          * Reol
