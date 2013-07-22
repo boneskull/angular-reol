@@ -1,6 +1,6 @@
 # angular-reol
 
-Reol.js forked to AngularJS factory.  I have run this code a little bit.  Use at your own risk.
+Reol.js (https://npmjs.org/package/reol) forked to AngularJS factory.  I have run this code a little bit.  Use at your own risk.
 
 ## Installation
 
