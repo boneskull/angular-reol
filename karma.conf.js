@@ -10,8 +10,8 @@ basePath = '';
 files = [
     JASMINE,
     JASMINE_ADAPTER,
-    'lib/angular/angular.js',
-    'lib/angular-mocks/angular-mocks.js',
+    'test/lib/angular/angular.js',
+    'test/lib/angular-mocks/angular-mocks.js',
     'src/angular-reol.js',
     'test/spec/angular-reol.spec.js'
 ];
