@@ -1,4 +1,5 @@
-# angular-reol
+angular-reol [![Build Status](https://travis-ci.org/decipherinc/angular-reol.png?branch=master)](https://travis-ci.org/decipherinc/angular-reol)
+============
 
 Reol.js (https://npmjs.org/package/reol) forked to AngularJS factory.  I have run this code a little bit.  Use at your own risk.
 
