@@ -286,8 +286,8 @@
          * @return (Array) Everything
          */
 
-        Reol.prototype.toArray = function () {
-            return Array.apply(this, this);
+        Reol.prototype.toArray = function toArray () {
+            return [].slice.call(this);
         };
 
 

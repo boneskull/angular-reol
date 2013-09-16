@@ -44,9 +44,7 @@ module.exports = function (grunt) {
         files: 'test/spec/*.js',
         tasks: ['test']
       }
-    },
-
-
+    }
   });
 
   grunt.loadNpmTasks('grunt-karma');
