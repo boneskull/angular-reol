@@ -178,9 +178,15 @@
          * Clears out the entire list.  Use remove() to call this.
          */
         Reol.prototype._clear = function _clear(callback) {
-            callback = callback || angular.noop;
-            this.index = {};
+            var index = {};
+            angular.forEach(this.indexes, function (_, field) {
+                index[field] = {};
+            });
+
+            this.index = index;
             this.length = 0;
+
+            callback = callback || angular.noop;
             callback();
         };
 
@@ -342,4 +348,4 @@
 
     }]);
 
-})();
+}());

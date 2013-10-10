@@ -132,7 +132,12 @@ describe('angular-reol', function () {
             r.add(testObj);
             r.add(testObj);
             r._clear();
-            expect(r.index).toEqual({});
+            expect(r.index).toEqual(
+                {
+                    label1: {},
+                    'nested.child': {}
+                }
+            );
             expect(r.toArray()).toEqual([]);
         });
     });
