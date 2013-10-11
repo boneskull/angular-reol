@@ -121,8 +121,10 @@ describe('angular-reol', function () {
     });
 
     describe('toArray', function () {
+        it('should be a real array', function () {
+            expect(angular.isArray(r)).toBe(true);
+        });
         it('should return a real array', function () {
-            expect(angular.isArray(r)).toBe(false);
             expect(angular.isArray(r.toArray())).toBe(true);
         });
     });
@@ -132,13 +134,17 @@ describe('angular-reol', function () {
             r.add(testObj);
             r.add(testObj);
             r._clear();
-            expect(r.index).toEqual(
-                {
-                    label1: {},
-                    'nested.child': {}
-                }
-            );
             expect(r.toArray()).toEqual([]);
+        });
+        it('should preserve indixed fields', function () {
+            var indexed = {};
+            r.add(testObj);
+            r.add(testObj);
+            angular.forEach(r.indexes, function (_, field) {
+                indexed[field] = {};
+            });
+            r._clear();
+            expect(r.index).toEqual(indexed);
         });
     });
 
