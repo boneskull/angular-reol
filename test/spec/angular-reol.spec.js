@@ -24,6 +24,12 @@ describe('angular-reol', function () {
 
     }));
 
+    describe('Reol', function () {
+        it('should be a real array', function () {
+            expect(angular.isArray(r)).toBe(true);
+        });
+    });
+
     describe('constructor', function () {
         it('should initialize its properties', function () {
             var r;
@@ -121,9 +127,6 @@ describe('angular-reol', function () {
     });
 
     describe('toArray', function () {
-        it('should be a real array', function () {
-            expect(angular.isArray(r)).toBe(true);
-        });
         it('should return a real array', function () {
             expect(angular.isArray(r.toArray())).toBe(true);
         });
