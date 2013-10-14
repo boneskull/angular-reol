@@ -15,21 +15,24 @@
          * @return (Object) this
          */
 
-        var Reol = function Reol(fields) {
-            var that = this;
+        var reol = function reol(fields) {
+            var ret = [];
+            var that = ret;
             fields = fields || {};
 
-            this.index = {};
-            this.indexes = {};
+            ret.index = {};
+            ret.indexes = {};
 
             // Define indexes
             angular.forEach(fields, function (_, field) {
                 that.index[field] = {};
                 that.indexes[field] = fields[field];
             });
+
+            return ret;
         };
 
-        Reol.prototype = [];
+        var fns = {};
 
         /* Public methods
          ============================================================================= */
@@ -43,10 +46,10 @@
          *
          * @param element (Object) Object to be indexed
          * @param [callback] (Function) Optional callback
-         * @return (Reol) this
+         * @return (reol) this
          */
 
-        Reol.prototype.add = function add(element, callback) {
+        fns.add = function add(element, callback) {
             var that = this, i, l;
 
             callback = callback || function (e) {
@@ -61,7 +64,7 @@
             }
 
             // Removed merge() in favor of this; if "element" is an Array,
-            // add everything in it.  If you want to merge two Reol objects,
+            // add everything in it.  If you want to merge two reol objects,
             // do this instead:
             //   reol1.merge(reol2.toArray());
             if (angular.isArray(element)) {
@@ -87,14 +90,14 @@
         /**
          * .merge()
          *
-         * Adds all elements in an Array or another instance of Reol.
+         * Adds all elements in an Array or another instance of reol.
          *
-         * @param elements (Reol|Array) Elements to merge
+         * @param elements (reol|Array) Elements to merge
          * @param [callback] (Function) Optional callback
          * @return (Object) this
          */
 
-        Reol.prototype.merge = function merge(elements, callback) {
+        fns.merge = function merge(elements, callback) {
             return this.add(elements, callback);
         };
 
@@ -112,7 +115,7 @@
          * @return (Array|Object|undefined) The found elements
          */
 
-        Reol.prototype.find = function find(conditions, callback, one) {
+        fns.find = function find(conditions, callback, one) {
             var key, condition, result;
 
             callback = callback || angular.noop;
@@ -167,7 +170,7 @@
          * @return (Object|undefined) The element found if found
          */
 
-        Reol.prototype.findOne = function findOne(conditions, callback) {
+        fns.findOne = function findOne(conditions, callback) {
             callback = callback || angular.noop;
             return this.find(conditions, function (err, result) {
                 callback(err, result[0]);
@@ -177,10 +180,16 @@
         /**
          * Clears out the entire list.  Use remove() to call this.
          */
-        Reol.prototype._clear = function _clear(callback) {
-            callback = callback || angular.noop;
-            this.index = {};
+        fns._clear = function _clear(callback) {
+            var index = {};
+            angular.forEach(this.indexes, function (_, field) {
+                index[field] = {};
+            });
+
+            this.index = index;
             this.length = 0;
+
+            callback = callback || angular.noop;
             callback();
         };
 
@@ -190,7 +199,7 @@
          * @param value
          * @returns {number} Index, -1 if not found
          */
-        Reol.prototype._findIndexInList = function findInList(key, value) {
+        fns._findIndexInList = function findInList(key, value) {
             var i, l, list = this;
 
             for (i = 0, l = list.length; i < l; i++) {
@@ -208,7 +217,7 @@
          * @param callback Callback
          * @param {boolean} one Whether to only remove one thing
          */
-        Reol.prototype.remove = function remove(conditions, callback, one) {
+        fns.remove = function remove(conditions, callback, one) {
             var condition, key, that = this;
 
             callback = callback || angular.noop;
@@ -246,7 +255,7 @@
          * @return (Array) Found elements.
          */
 
-        Reol.prototype.findInIndex = function findInIndex(key, value) {
+        fns.findInIndex = function findInIndex(key, value) {
             return this.index[key][angular.toJson(value)];
         };
 
@@ -262,7 +271,7 @@
          * @return (Array) Found elements.
          */
 
-        Reol.prototype.findInList = function findInList(key, value, one) {
+        fns.findInList = function findInList(key, value, one) {
             var i, l, result = [], list = this;
 
             for (i = 0, l = list.length; i < l; i++) {
@@ -286,14 +295,14 @@
          * @return (Array) Everything
          */
 
-        Reol.prototype.toArray = function toArray () {
+        fns.toArray = function toArray() {
             return [].slice.call(this);
         };
 
 
         /* "Private" helper; exposed for testing
          ============================================================================= */
-        Reol.prototype._addToIndex = function _addToIndex(field, element) {
+        fns._addToIndex = function _addToIndex(field, element) {
             var indexedValue;
 
             if (element[field]) {
@@ -313,7 +322,7 @@
             return false;
         };
 
-        Reol.prototype._removeFromIndex = function _removeFromIndex(field, element) {
+        fns._removeFromIndex = function _removeFromIndex(field, element) {
             var indexedValue;
 
             if (element[field]) {
@@ -337,9 +346,10 @@
         };
 
         return function (o) {
-            return new Reol(o);
+            var ret = reol(o);
+            return angular.extend(ret, fns);
         };
 
     }]);
 
-})();
+}());
