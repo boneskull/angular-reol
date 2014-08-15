@@ -1,38 +1,35 @@
 {
   "name": "angular-reol",
   "description": "Reol.js forked to AngularJS factory",
-  "version": "0.2.3",
-  "maintainers": [
+  "version": "0.3.0",
+  "author": [
     {
       "name": "Christopher Hiller",
-      "email": "chiller@badwing.com",
-      "web": "http://badwing.com"
+      "email": "chiller@decipherinc.com",
+      "url": "http://decipherinc.com"
     }
   ],
-  "dependencies": {
-    "grunt": "0.4.x",
-    "grunt-contrib-uglify": "0.2.x",
-    "grunt-contrib-concat": "0.3.x"
-  },
-  "devDependencies": {
-    "grunt": "0.4.x",
-    "grunt-contrib-jshint": "0.5.x",
-    "grunt-karma": "0.4.x",
-    "grunt-bower-task": "~0.3.2",
-    "grunt-contrib-watch": "0.4.x",
-    "grunt-cli": "~0.1.9"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/boneskull/angular-reol.git"
+    "url": "https://github.com/decipherinc/angular-reol.git"
   },
-  "licenses": [
-    {
-      "name": "MIT",
-      "url": "http://opensource.org/licenses/MIT"
-    }
-  ],
+  "license": "MIT",
   "scripts": {
     "test": "grunt test"
+  },  
+  "main": "angular-reol.js",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-bower-task": "^0.4.0",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-dev-update": "^0.6.0",
+    "grunt-karma": "^0.8.3",
+    "karma": "^0.12.21",
+    "karma-jasmine": "^0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-story-reporter": "^0.2.2"
   }
 }

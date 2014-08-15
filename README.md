@@ -9,19 +9,19 @@ Warning: This code was forked against an older version of Reol.js!  While it has
 
 ```
 bower install angular-reol
-````
+```
 
 ## Build
 
 ```
 npm install
-grunt
+grunt build
 ```
 
 ## Run Tests
 ```
 npm install
-grunt test
+npm test
 ```
 
 

@@ -1,14 +1,15 @@
 {
-  "name": "angular-reol",
-  "version": "0.2.3",
-  "main": "src/angular-reol.js",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "components"
-  ],
-  "devDependencies": {
-    "angular-mocks": "1.2.0-rc.2",
-    "angular": "1.2.0-rc.2"
-  }
+    "name": "angular-reol",
+    "version": "0.2.4",
+    "main": "angular-reol.js",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "support",
+        "Gruntfile.js"
+    ],
+    "devDependencies": {
+        "angular-mocks": "*",
+        "angular": "*"
+    }
 }
